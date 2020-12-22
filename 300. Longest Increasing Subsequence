@@ -1,3 +1,5 @@
+First version: DP(236ms)
+
 class Solution {
 public:
     int lengthOfLIS(vector<int>& nums) {        
@@ -19,3 +21,29 @@ public:
         return ans;
     }
 };
+
+Sencond version: (16ms)
+
+class Solution {
+public:
+    int lengthOfLIS(vector<int>& nums) {
+        vector<int> res;
+        for (auto e:nums){
+            if (res.size() == 0) res.push_back(e);
+            else if (e>res.back()) res.push_back(e);
+            else {
+                int n = res.size();
+                for(int i=0; i<n;i++){
+                    if (res[i]>=e) {
+                        res[i] = e;
+                        break;
+                    }
+                }
+            }
+        }
+        return res.size();
+    }
+};
+
+
+Third version:
