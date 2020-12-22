@@ -46,4 +46,38 @@ public:
 };
 
 
-Third version:
+Third version: nlogn method using binary search (12ms)
+
+class Solution {
+public:
+    int lengthOfLIS(vector<int>& nums) {
+        vector<int> res;
+        for (auto e:nums){
+            if (res.size() == 0) res.push_back(e);
+            else if (e>res.back()) res.push_back(e);
+            else {
+                int index = getindex(e,res); //binary search
+                res[index] = e;
+                }
+        }
+        return res.size();
+    }
+    
+    int getindex(int e, vector<int>& res) {
+        int left = 0, right = res.size()-1;
+        int mid=0;
+        while (left<right){
+            mid = (left+right)/2;
+            if ((mid>0 && e>res[mid-1] && e<res[mid])||e==res[mid]) {
+                return mid;
+            }
+            else if (e>res[mid]) {
+                left = mid+1;
+            }
+            else {
+                right = mid-1;
+            }
+        }
+        return left;
+    }
+};
