@@ -44,3 +44,25 @@ public:
         return n-maxnum;
     }
 };
+
+Third version: 转化为最长上升子序列，合法插入维持res (100ms)
+class Solution {
+public:
+    int eraseOverlapIntervals(vector<vector<int>>& intervals) {
+        int n=intervals.size();
+        if (n==0) return 0;
+        sort(intervals.begin(),intervals.end(),[](const vector<int>&a,const vector<int>&b){return a[1]<b[1];});
+        vector<vector<int>> res;
+        for(auto e:intervals){
+            if (res.size()==0) res.push_back(e);
+            else if (e[0]>=res.back()[1]) res.push_back(e);
+            else {
+                //插入到合理位置，保证res最终是最长上升子序列
+                for(int i=1;i<res.size();i++) {
+                    if (res[i-1][1]<=e[0] && e[1]<res[i][1]) res[i] = e;
+                }
+            }
+        }
+        return n-res.size();
+    }
+};
