@@ -1,0 +1,15 @@
+Greedy (120ms)
+
+class Solution {
+public:
+    int findLongestChain(vector<vector<int>>& pairs) {
+        sort(pairs.begin(),pairs.end(),[](const vector<int>& a, const vector<int>& b) {return a[1]<b[1];});
+        vector<vector<int>> res;
+        for(auto e:pairs) {
+            if (res.size()==0) res.push_back(e);
+            else if (e[0]>res.back()[1]) res.push_back(e);
+            else continue;
+        }
+        return res.size();
+    }
+};
