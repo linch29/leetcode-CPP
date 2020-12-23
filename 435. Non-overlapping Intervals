@@ -1,0 +1,46 @@
+First version: Greedy(28ms)
+
+class Solution {
+public:
+    int eraseOverlapIntervals(vector<vector<int>>& intervals) {
+        sort(intervals.begin(),intervals.end(),[](const vector<int>& a, vector<int>& b){return a[1]<b[1];}); // lambda表达式
+        vector<vector<int>> res;
+        for(auto e:intervals){
+            if (res.size()==0) {
+                res.push_back(e);
+            }
+            else if (e[0]>=res.back()[1]){
+                res.push_back(e);
+            }
+            else continue;
+        }
+        return intervals.size()-res.size();
+    }
+};
+
+Second version: 转化为最长上升子序列问题 dp(896ms)
+
+class Solution {
+public:
+    int eraseOverlapIntervals(vector<vector<int>>& intervals) {
+        int n=intervals.size();
+        if (n==0) return 0;
+        sort(intervals.begin(),intervals.end(),[](const vector<int>&a,const vector<int>&b){return a[0]<b[0];});
+        vector<int> dp(n,1);
+        int cur;
+        for (int i=1;i<n;i++){
+            cur = 1;
+            for (int j=0;j<i;j++) {
+                if(intervals[j][1]<=intervals[i][0] && dp[j]>=cur){
+                    cur = dp[j];
+                    dp[i] = cur+1;
+                }
+            }
+        }
+        int maxnum = dp[0];
+        for(auto e:dp){
+            if (e> maxnum) maxnum = e;
+        }
+        return n-maxnum;
+    }
+};
