@@ -1,0 +1,171 @@
+First verson: hashmap + dp (110ms)
+class Solution {
+public:
+    vector<vector<int>> findSubsequences(vector<int>& nums) {
+        
+        int n = nums.size();
+        
+        // 包含无重叠的上升序列
+        vector<vector<int>>increasingSequences;
+        
+        // 包含上升序列的string map
+        vector<string>sequenceStrings;
+        
+        // 对任意j,跟踪以nums[j]为结尾的所有上升序列在increasingSequences的起始索引和终点索引
+        vector<pair<int,int>>dp(n,{-1,-1});
+        
+        // 跟踪上升序列的string map以防重叠
+        unordered_map<string,bool>trackSequence;
+        
+        for(int i=1;i<n;i++)
+        {
+            int l = increasingSequences.size();
+            for(int j=0;j<i;j++)
+            {
+                if(nums[j]<=nums[i])
+                {
+                    string sequence = '#'+to_string(nums[j])+'#'+to_string(nums[i]);
+                    if(trackSequence.count(sequence)==0)
+                    {
+                        increasingSequences.push_back({nums[j],nums[i]});
+                        sequenceStrings.push_back(sequence);
+                        trackSequence[sequence] = true;
+                    }
+                    
+                    // 循环所有以nums[j]结尾的上升序列，为每个上升序列加上nums[i]并添加到increasingSequences
+                    for(int k=dp[j].first;k<dp[j].second;k++)
+                    {
+                        sequence = sequenceStrings[k] + '#'+ to_string(nums[i]);
+
+                        if(trackSequence.count(sequence)==0)
+                        {
+                            sequenceStrings.push_back(sequence);
+                            trackSequence[sequence] = true;
+                            increasingSequences.push_back(increasingSequences[k]);
+                            increasingSequences.back().push_back(nums[i]); 
+                        }
+
+                    }
+                }
+            }
+            
+            int h = increasingSequences.size();
+            
+            // 更新以nums[i]为结尾的上升序列在increasingSequences的起始索引和终点索引
+            if(l<h)dp[i] = {l,h};
+        }
+        return increasingSequences;
+    }
+};
+
+Second version: set + dp (220ms)
+class Solution {
+public:
+    vector<vector<int>> findSubsequences(vector<int>& nums) {
+        
+        int n = nums.size();
+        
+        vector<vector<int>>increasingSequences;
+        set<vector<int>>sequenceSet;
+        
+        vector<pair<int,int>>dp(n,{-1,-1});
+                
+        for(int i=1;i<n;i++)
+        {
+            int l = increasingSequences.size();
+            
+            for(int j=0;j<i;j++)
+            {
+                if(nums[j]<=nums[i])
+                {
+                    increasingSequences.push_back({nums[j],nums[i]});
+                    sequenceSet.insert({nums[j],nums[i]});
+                    
+                    for(int k=dp[j].first;k<dp[j].second;k++)
+                    {
+                        increasingSequences.push_back(increasingSequences[k]);
+                        increasingSequences.back().push_back(nums[i]); 
+                        sequenceSet.insert(increasingSequences.back());
+                    }
+                }
+            }
+            
+            int h = increasingSequences.size();
+            
+            if(l<h)dp[i] = {l,h};
+        }
+        
+        vector<vector<int>>result(sequenceSet.begin(),sequenceSet.end());
+
+        return result;
+    }
+};
+
+Third verson: dfs recursive (690ms)
+
+class Solution {
+public:
+    set<vector<int>>s;
+    vector<vector<int>>v;
+    
+    void dfs(vector<int>nums,vector<int>temp,int i,int prev){
+        if(temp.size()>=2&& s.find(temp)==s.end()){
+            v.push_back(temp);
+            s.insert(temp);
+        }
+        if(i==nums.size())
+          return;  
+        
+        if(nums[i]>=prev){
+            
+            temp.push_back(nums[i]);
+            
+            dfs(nums,temp,i+1,nums[i]);
+            
+            temp.pop_back();
+            
+        }
+        dfs(nums,temp,i+1,prev);
+        
+        return;
+        
+        }
+    
+    
+    vector<vector<int>> findSubsequences(vector<int>& nums) {
+        
+        
+        vector<int>temp;
+        
+        dfs(nums,temp,0,INT_MIN);        
+        
+        return v;
+        
+        
+    }
+};
+
+Fourth verson: faster dfs recursive (476ms)
+
+class Solution {
+public:
+    set<vector<int>> ans;
+    
+    void dfs(vector<int>& nums, int i, int l, int prev, vector<int> temp) {
+        if (l >= 2) ans.insert(temp);
+        if (i >= nums.size()) return;
+        dfs(nums, i+1, l, prev, temp);
+        if (nums[i] >= prev) {
+            temp.push_back(nums[i]);
+            prev = nums[i];
+            dfs(nums, ++i, ++l, prev, temp);
+        }
+    }
+    
+    vector<vector<int>> findSubsequences(vector<int>& nums) {
+        vector<int> temp;
+        dfs(nums, 0, 0, -101, temp);
+        vector<vector<int>> finalAns(ans.begin(), ans.end());
+        return finalAns;
+    }
+};
