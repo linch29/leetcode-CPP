@@ -36,3 +36,79 @@ public:
         return hold[0].first;
     }
 };
+
+
+Recursive (20ms)
+
+class Solution
+{
+public:
+    ListNode* reverseKGroup(ListNode* head, int k) {
+        ListNode* temp = head;
+        for(int i = 0; i < k; i++){      // to make sure we have k elements
+            if(temp == NULL) return head;    // if less than k elements - dont reverse
+            temp = temp->next;
+        }
+        int count = 0;
+        ListNode* prev = reverseKGroup(temp, k);    // returns first element of next k elements after reversing
+        while(count < k){      //  reversing current k elements
+            ListNode* n = head->next;
+            head->next = prev;
+            prev = head;
+            head = n;
+            count++;
+        }
+        return prev;
+    }
+};
+
+Iterative (20ms)
+
+class Solution
+{
+public:
+    // Function to find the length of the list
+    int length(ListNode *head)
+    {
+        int l=0;
+        while(head)
+        {
+            l++;
+            head = head->next;
+        }
+        return l;
+    }
+    
+    ListNode* reverseKGroup(ListNode* head, int k)
+    {
+        if(k==1)
+            return head; // When k=1, no changes are needed and the list can be returned as is.
+        int l = length(head); // Find the length of the list.
+        int lim = l/k; // Finding the number of segments that need to be reversed.
+		               // For e.g. when length is 5 and k = 2 the we need to reverse 2 segments i.e 5/2 segments.
+        ListNode *res; // Stores the node to be returned.
+        ListNode *currHead = head;
+        for(int i=0; i<lim; i++) // Looping for the number of segments.
+        {
+            ListNode *curr = currHead, *prev = NULL, *next; // Initializing necessary variables to reverse the segment.
+            int c=k;
+            while(c--) // Reversing k nodes.
+            {
+                next = curr->next;
+                curr->next = prev;
+                prev = curr;
+                curr = next;
+            }
+            if(i==0) // Head of the first reversed segment is the answer. So storing it in res. 
+                res = prev;
+            else // All the other reversed segments need to be attached to the previous reversed segment. 
+            {
+                head->next = prev;
+                head = currHead;
+            }
+            currHead->next = curr; // Moving on to the next segment for reversal.
+            currHead = curr;
+        }
+        return res;
+    }
+};
