@@ -1,0 +1,38 @@
+Using vector to keep k head and tail (16ms)
+
+class Solution {
+public:
+    ListNode* reverseKGroup(ListNode* head, int k) {
+        ListNode* dummy = new ListNode(-1,head);
+        ListNode* pre = head;
+        int n=0;
+        while (pre) {
+            n += 1;
+            pre = pre->next;
+        }
+        int cnt = n/k;
+        if (n==1||k==1) return head;
+        vector<pair<ListNode*,ListNode*>> hold;
+        ListNode* c = head;
+        ListNode* b = c;
+        ListNode* a ;
+        for (int i=0;i<cnt;i++) {
+            a = b;
+            ListNode* tail = a;
+            c = c->next;
+            b = c;
+            for (int i=0;i<k-1;i++) {
+                c = c->next;
+                b->next = a;
+                a = b;
+                b = c;
+            }
+            hold.push_back(pair(a,tail));
+        }
+        hold.push_back(pair(c,nullptr));
+        for (int i=0;i<cnt;i++) {
+            hold[i].second->next = hold[i+1].first;
+        }
+        return hold[0].first;
+    }
+};
