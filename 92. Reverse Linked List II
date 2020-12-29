@@ -1,0 +1,35 @@
+(0ms)
+class Solution {
+public:
+    ListNode* reverseBetween(ListNode* head, int m, int n) {
+        if (n-m==0) return head;
+        int cnt = n-m;
+        ListNode* left;
+        ListNode* midl = head;
+        ListNode* midr = head;
+        ListNode* right = head;
+        ListNode* prev = nullptr;
+        ListNode* cur = head;
+        ListNode* next = head;
+        while (m) {
+            if (m==1) left = prev;
+            prev = cur;
+            cur = cur->next;
+            m--;
+        }
+        midr = prev;
+        while (cnt) {
+            next = cur->next;
+            cur->next = prev;
+            prev = cur;
+            cur = next;
+            cnt--;
+        }
+        midl = prev;
+        right = cur;
+        midr->next = right;
+        if (!left) return midl;
+        left->next = midl;
+        return head;
+    }
+};
