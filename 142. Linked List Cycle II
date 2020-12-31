@@ -1,0 +1,26 @@
+快慢指针 (8ms)
+
+class Solution {
+public:
+    ListNode *detectCycle(ListNode *head) {
+        ListNode* fast = head;
+        ListNode* slow = head;
+        bool cycle = false;
+        while (fast && fast->next && fast->next->next) {
+            fast = fast->next->next;
+            slow = slow->next;
+            if(slow==fast) {
+                cycle = true;
+                break;
+            }
+        }
+        if (cycle == false) return nullptr;
+        slow = head;
+        while (slow!=fast) {
+            fast = fast->next;
+            slow = slow->next;
+        }
+        return slow;
+        
+    }
+};
