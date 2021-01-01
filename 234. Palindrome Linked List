@@ -1,0 +1,32 @@
+奇怪的递归
+
+class Solution {
+public:
+    bool isPalindrome(ListNode* head) {
+        if (!head) return true;
+        int start = 0;
+        int indicator = 0;
+        bool ans;
+        helper(head,head,start,0,indicator);
+        ans = (indicator == 1)? true:false;
+        return ans;
+    }
+    void helper(ListNode*& left, ListNode* right, int& start, int end, int& indicator) {
+        if (right->next) {
+            helper(left,right->next,start,end+1,indicator);
+        }
+        if (indicator != 0) return;
+        if (left->val != right->val) {
+            indicator = -1;
+        }
+        else if (start>=end) {
+            indicator = 1;
+            return;
+        }
+        else {
+            left = left->next;
+            start ++;
+            return;
+        }
+    }
+};
