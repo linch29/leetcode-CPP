@@ -1,0 +1,21 @@
+中位数的中位数（直接合并数组 快搜）
+class Solution {
+public:
+    double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {
+        nums1.insert(nums1.end(),nums2.begin(),nums2.end());
+        int n = nums1.size();
+        int k = n/2;
+        if (n%2!=0) {
+            nth_element(nums1.begin(),nums1.begin()+k,nums1.end());
+            return nums1[k];
+        }
+        else {
+            vector<int> copy1 = nums1;
+            vector<int> copy2 = nums1;
+            nth_element(copy1.begin(),copy1.begin()+k-1,copy1.end());
+            nth_element(copy2.begin(),copy2.begin()+k,copy2.end());
+            double ans = ((double)copy1[k-1]+(double)copy2[k])/2;
+            return ans;
+        }
+    }
+};
