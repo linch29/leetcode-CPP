@@ -1,0 +1,52 @@
+给定一个方阵，其中每个单元(像素)非黑即白。设计一个算法，找出 4 条边皆为黑色像素的最大子方阵。
+
+返回一个数组 [r, c, size] ，其中 r, c 分别代表子方阵左上角的行号和列号，size 是子方阵的边长。若有多个满足条件的子方阵，返回 r 最小的，若 r 相同，返回 c 最小的子方阵。若无满足条件的子方阵，返回空数组。
+
+dp 
+
+class Solution {
+public:
+    bool check(int i, int j, int len, vector<vector<int>>& matrix) {
+        if (matrix[i][j]!=0) return false;
+        int you = len-1;
+        int xia = len-1;
+        int zuo = len-1;
+        int shang = len-1;
+        while (you--) {
+            j++;
+            if (matrix[i][j]!=0) return false;
+        }
+        while (xia--) {
+            i++;
+            if (matrix[i][j]!=0) return false;
+        }
+        while (zuo--) {
+            j--;
+            if (matrix[i][j]!=0) return false;
+        }
+        while (shang--) {
+            i--;
+            if (matrix[i][j]!=0) return false;
+        }
+        return true;
+    }
+    vector<int> findSquare(vector<vector<int>>& matrix) {
+        int r = matrix.size();
+        int c = matrix[0].size();
+        int ans = 0;
+        vector<int> res;
+        for (int i=0;i<r;i++) {
+            for (int j=0; j<c; j++) {
+                int longest = min(r-i,c-j);
+                if (ans>=longest) continue;
+                for (int len=1; len<=longest; len++) {
+                    if (check(i,j,len,matrix) && len > ans) {
+                        ans = len;
+                        res = {i,j,ans};
+                    }
+                }
+            }
+        }
+        return res;
+    }
+};
