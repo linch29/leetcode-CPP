@@ -47,3 +47,48 @@ public:
     return ans;
     }
 };
+
+快排思想
+
+class Solution {
+public:
+
+    int partition(vector<int>& arr, int left, int right) {
+        int p = arr[right];
+        int i = left, j = right-1;
+        while (true) {
+            while (arr[i]<p && i <=right) i++;
+            while (arr[j]>p && j>=0) j--;
+            if (i>j) break;
+            swap(arr[i],arr[j]);
+            i++;
+            j--;
+        }
+        swap(arr[i],arr[right]);
+        return i;
+        }
+    vector<int> smallestK(vector<int>& arr, int k) {
+        vector<int> ans;
+        if (k==0) return ans;
+        if (k==arr.size()) return arr;
+        int left = 0, right = arr.size()-1;
+        int index = partition(arr,left,right);
+        bool flag = false;
+        while (left <= right) {
+            if (index== k-1) {
+                flag = true;
+                ans = vector(arr.begin(),arr.begin()+k);
+                return ans;
+            }
+            else if (index < k-1) {
+                left = index+1;
+                index = partition(arr,left, right);
+            }
+            else {
+                right = index-1;
+                index = partition(arr,left,right);
+            }
+        }
+        return vector(arr.begin(),arr.begin()+k);
+    }
+};
