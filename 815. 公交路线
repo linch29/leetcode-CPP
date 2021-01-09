@@ -1,0 +1,42 @@
+BFS
+
+class Solution {
+public:
+    int numBusesToDestination(vector<vector<int>>& routes, int S, int T) {
+        if (S==T) return 0;
+        map<int,vector<int>> stop2bus;
+        for (int i=0; i<routes.size();i++) {
+            for (int stop:routes[i]) {
+                stop2bus[stop].push_back(i); 
+            }
+        }
+
+        set<int> visited_stop;
+        set<int> used_bus;
+        queue<int> q;
+        q.push(S);
+        visited_stop.insert(S);
+        int ans = 1;
+        while (!q.empty()) {
+            int num = q.size();
+            while (num--) {
+                int cur = q.front();
+                q.pop();
+                for (int bus:stop2bus[cur]) {
+                    if (used_bus.count(bus)) continue;
+                    used_bus.insert(bus);
+                    for (int stop:routes[bus]) {
+                        if (T==stop) return ans;
+                        if (visited_stop.count(stop)) continue;
+                        visited_stop.insert(stop);
+                        q.push(stop);
+                    }
+                }
+            }
+            ans +=1;
+        }
+        return -1;
+
+
+    }
+};
