@@ -1,0 +1,66 @@
+建图 DFS
+
+class Solution {
+public:
+    int flag = 0;
+    vector<double> res;
+    vector<double> calcEquation(vector<vector<string>>& equations, vector<double>& values, vector<vector<string>>& queries) {
+        map<string,int> vertexs;
+        int cnt = 0;
+        for (auto& relation:equations) {
+            for (auto& zimu:relation) {
+                if(!vertexs.count(zimu)) {
+                    vertexs[zimu] = cnt;
+                    cnt += 1;
+                }
+            }
+        }
+        vector<vector<int>> G;
+        vector<vector<double>> W;
+        vector<bool> vis;
+        G = vector<vector<int>>(vertexs.size());
+        W = vector<vector<double>>(vertexs.size());
+        vis = vector<bool>(vertexs.size());
+        for (int i=0; i<equations.size(); i++) {
+            G[vertexs[equations[i][0]]].push_back(vertexs[equations[i][1]]);
+            G[vertexs[equations[i][1]]].push_back(vertexs[equations[i][0]]);
+            W[vertexs[equations[i][0]]].push_back(values[i]);
+            W[vertexs[equations[i][1]]].push_back(1/values[i]);
+
+        }
+        for (auto query:queries) {
+            string s1 = query[0];
+            string s2 = query[1];
+            if (s1==s2 && vertexs.count(s1)) {
+                res.push_back(1.0);
+                continue;
+            }
+            else if (!vertexs.count(s1) || !vertexs.count(s2)) {
+                res.push_back(-1.0);
+                continue;
+            }
+            vis[vertexs[s1]] = true;
+            dfs(W,G,1,vertexs[s1],vertexs[s2],vis);
+            vis[vertexs[s1]] = false;
+            if (flag==0) res.push_back(-1.0);
+            else flag = 0;
+        }
+        return res;
+    }
+
+    void dfs(vector<vector<double>> W, vector<vector<int>> G, double val, int start, int end, vector<bool>& vis) {
+        if (start==end) {
+            res.push_back(val);
+            flag = 1;
+            return;
+        }
+        for (int i=0; i<G[start].size(); i++) {
+            if (vis[G[start][i]] || flag == 1) continue;
+            val *= W[start][i];
+            vis[G[start][i]] = true;
+            dfs(W,G,val,G[start][i],end,vis);
+            vis[G[start][i]] = false;
+            val /= W[start][i];
+        }
+    }
+};
