@@ -1,0 +1,17 @@
+bool cmp(const vector<int>& a, const vector<int>& b) {
+    return a[0] == b[0] ? a[1] > b[1]: a[0] < b[0];
+}
+
+class Solution {
+public:
+    int maxEnvelopes(vector<vector<int>>& envelopes) {
+        sort(envelopes.begin(), envelopes.end(), cmp); //排序转化为最长上升子序列问题
+        vector<int> dp; //长度为 i+1 的地方 最小的数字
+        for(const auto &e: envelopes) {
+            auto p = lower_bound(dp.begin(), dp.end(), e[1]);  //二分查找第一个大于等于的地方
+            if(p == dp.end()) dp.push_back(e[1]);
+            else *p = e[1];
+        }
+        return dp.size();
+    }
+};
