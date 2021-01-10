@@ -1,0 +1,70 @@
+#include <bits/stdc++.h>
+using namespace std;
+vector<vector<int>> G;
+vector<vector<int>> W;
+struct cmp{
+    bool operator() (const pair<int,int>& a, const pair<int,int>& b)
+    {
+        return a.second>b.second;
+    }
+};
+
+void dijkstra(vector<vector<int>>& G,vector<vector<int>>& W,int start,vector<int>& dis)
+{
+    dis[start] = 0;
+    priority_queue<pair<int,int>, vector<pair<int,int>>, cmp> vertex_dis;
+    int n = G.size();
+    vertex_dis.push(make_pair(start,0));
+    while (!vertex_dis.empty()) {
+        int u = vertex_dis.top().first; vertex_dis.pop();
+        for (int i=0; i<G[u].size(); i++) {
+            int v = G[u][i];
+            if (dis[v]>dis[u]+W[u][i]) {
+                dis[v] = dis[u]+W[u][i];
+                vertex_dis.push(make_pair(v,dis[v]));
+            }
+        }
+
+
+    }
+
+
+}
+
+int main()
+{
+    int n;
+    cin >> n;
+    G = vector<vector<int>>(2*n); //最多有2n个节点
+    W = vector<vector<int>>(2*n);
+    int u, v, w;
+    for (int i=0; i<n; i++) {
+        cin >> u >> v >> w;
+        G[u].push_back(v);
+        W[u].push_back(w);
+    } //建图完毕
+    vector<int> dis;
+    dis = vector<int>(2*n,INT_MAX);
+    dijkstra(G,W,1,dis);
+    for (int i=0; i<dis.size();i++) {
+        cout << dis[i] << ' ' << endl;
+    }
+
+    return 0;
+}
+
+/*测试数据
+9
+1 2 1
+1 3 12
+2 3 9
+2 4 3
+3 5 5
+4 3 4
+4 5 13
+4 6 15
+5 6 4
+
+测试结果
+0 1 8 4 13 17
+*/
