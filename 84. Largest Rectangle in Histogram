@@ -1,0 +1,25 @@
+单调栈
+
+class Solution {
+public:
+    int largestRectangleArea(vector<int>& heights) {
+        stack<int> ss;
+        heights.push_back(-1);
+        int n = heights.size();
+        int ans = 0;
+        int area = 0;
+        int i = 0;
+        while (i<n) {
+            if (ss.empty() || heights[i] >= heights[ss.top()]) {
+                ss.push(i);
+                i++;
+            }
+            else {
+                int ind = ss.top(); ss.pop();
+                area =(ss.empty())? heights[ind]*i:heights[ind]*(i-ss.top()-1);
+                if (area>ans) ans=area;
+            }
+        }
+        return ans;
+    }
+};
