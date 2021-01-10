@@ -1,0 +1,40 @@
+利用最大直方图矩形 O(n)，从上往下构造直方图 O(n^3)
+
+class Solution {
+public:
+    int maximalRectangle(vector<vector<char>>& matrix) {
+        if (!matrix.size()) return 0;
+        vector<int> heights;
+        heights = vector<int>(matrix[0].size());
+        int row = matrix.size();
+        int ans = 0;
+        for (int i=0; i<row; i++) {
+            for (int j=0; j<matrix[0].size(); j++) {
+                heights[j] = matrix[i][j]=='0'? 0:(1+heights[j]);
+            }
+            ans = max(ans,largestRectangleArea(heights));
+        }
+        return ans;
+    }
+    
+    int largestRectangleArea(vector<int>& heights) {
+        stack<int> ss;
+        heights.push_back(-1);
+        int n = heights.size();
+        int ans = 0;
+        int area = 0;
+        int i = 0;
+        while (i<n) {
+            if (ss.empty() || heights[i] >= heights[ss.top()]) {
+                ss.push(i);
+                i++;
+            }
+            else {
+                int ind = ss.top(); ss.pop();
+                area = heights[ind]* (ss.empty() ? i:(i-ss.top()-1));
+                if (area>ans) ans=area;
+            }
+        }
+        return ans;
+    }
+};
