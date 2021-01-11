@@ -1,0 +1,54 @@
+
+// Node存储横纵坐标和该位置的高度
+struct Node {
+    int i, j, h;
+    Node(int x, int y, int z) : i(x), j(y), h(z) {}
+};
+struct cmp {
+    bool operator() (const Node& a, const Node& b) {
+        return a.h > b.h;
+    }
+};
+
+class Solution {
+public:
+    int trapRainWater(vector<vector<int>>& heightMap) {
+        if (heightMap.size() <= 2 || heightMap[0].size() <= 2) return 0;
+        // 初始时将所有的边界加入到堆中，取出高度最小的，将此位置往内扩充，
+        // 扩充过程中计算新扩充的位置处可以存储的雨水
+        // 因为它由堆顶扩充而来，其他边界的高度均大于堆顶，因此将新扩充位置高度与堆顶高度比较
+        // 可以得到该位置可以存储的雨水
+        priority_queue<Node,vector<Node>,cmp> pq;
+        int n = heightMap.size(), m = heightMap[0].size();
+        vector<vector<bool>> visited(n, vector<bool>(m, false));
+
+        for (int i = 0; i < n; i++) {
+            visited[i][0] = visited[i][m - 1] = true;
+            pq.push(Node(i, 0, heightMap[i][0]));
+            pq.push(Node(i, m - 1, heightMap[i][m - 1]));
+        }
+        for (int i = 1; i < m - 1; i++) {
+            visited[0][i] = visited[n - 1][i] = true;
+            pq.push(Node(0, i, heightMap[0][i]));
+            pq.push(Node(n - 1, i, heightMap[n - 1][i]));
+        }
+
+        vector<int> dx = {-1, 1, 0, 0};
+        vector<int> dy = {0, 0, 1, -1};
+        int res = 0;
+        while (!pq.empty()) {
+            Node node = pq.top(); pq.pop();
+            for (int i = 0; i < 4; i++) {
+                int x = node.i + dx[i], y = node.j + dy[i];
+                if (x >= 0 && x < n && y >= 0 && y < m && !visited[x][y]) {
+                    visited[x][y] = true;
+                    // 收缩边界的时候，当前的高度为新位置和旧位置中的最大值
+                    pq.push(Node(x, y, max(node.h, heightMap[x][y])));
+                    res += max(0, node.h - heightMap[x][y]);
+                }
+            }
+        }
+
+        return res;
+    }
+};
