@@ -1,0 +1,73 @@
+/* 先在组拓扑排序，再在组内拓扑排序*/
+
+class Solution {
+public:
+    vector<int> sortItems(int n, int m, vector<int>& group, vector<vector<int>>& beforeItems) {
+        vector<int> nodedegree(n);
+        vector<int> groupdegree(n+m);
+        vector<vector<int>> graphgroup(n+m);
+        vector<vector<int>> graphnode(n);
+        vector<vector<int>> groupnode(n+m);
+        vector<int> res;
+
+        for (int i=0; i<n; i++) {
+            if (group[i]==-1) {
+                group[i] = m;
+                m++;
+            }
+            groupnode[group[i]].push_back(i);
+        }
+
+        /*建组间图和节点图*/
+        for(int i=0; i<n; i++) {
+            for (auto u:beforeItems[i]) {
+                if (group[u]!=group[i]) {
+                    graphgroup[group[u]].push_back(group[i]);
+                    groupdegree[group[i]] +=1;
+                }
+                else {
+                    graphnode[u].push_back(i);
+                    nodedegree[i] +=1;
+                }
+            }
+        }
+
+        vector<int> graphid;
+        for (int i=0; i<groupnode.size(); i++) {
+            if (groupnode[i].size()) graphid.push_back(i);
+        }
+
+        vector<int> graphser = topsort(groupdegree, graphgroup, graphid);
+        if (!graphser.size()) return {};
+        for (auto groupid:graphser) {
+            if(groupnode[groupid].size()) {
+                vector<int> nodeingroup = topsort(nodedegree, graphnode, groupnode[groupid]);
+                if (!nodeingroup.size()) return {};
+                else for(auto e:nodeingroup) {res.push_back(e);}
+            }
+        }
+        return res;
+    }
+
+
+/* 给定入度，图，节点，输出拓扑序列。 */
+    vector<int> topsort(vector<int>& indegree, vector<vector<int>>& graph, vector<int>& nodes) {
+        vector<int> res;
+        queue<int> q;
+        for (auto node:nodes) {
+            if (indegree[node] == 0) {
+                q.push(node);
+            }
+        }
+        while (!q.empty()) {
+            int u = q.front(); q.pop();
+            res.push_back(u);
+            for (auto v:graph[u]) {
+                indegree[v] -= 1;
+                if (indegree[v]==0) q.push(v);
+            }
+        }
+        if(res.size()==nodes.size())  return res;
+        else return {};
+    }
+};
