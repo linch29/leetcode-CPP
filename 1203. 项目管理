@@ -9,7 +9,7 @@ public:
         vector<vector<int>> graphnode(n);
         vector<vector<int>> groupnode(n+m);
         vector<int> res;
-
+        //给所有点分组
         for (int i=0; i<n; i++) {
             if (group[i]==-1) {
                 group[i] = m;
@@ -17,8 +17,7 @@ public:
             }
             groupnode[group[i]].push_back(i);
         }
-
-        /*建组间图和节点图*/
+        //建立组间图和节点图，组间入度和节点入度
         for(int i=0; i<n; i++) {
             for (auto u:beforeItems[i]) {
                 if (group[u]!=group[i]) {
@@ -40,11 +39,9 @@ public:
         vector<int> graphser = topsort(groupdegree, graphgroup, graphid);
         if (!graphser.size()) return {};
         for (auto groupid:graphser) {
-            if(groupnode[groupid].size()) {
-                vector<int> nodeingroup = topsort(nodedegree, graphnode, groupnode[groupid]);
-                if (!nodeingroup.size()) return {};
-                else for(auto e:nodeingroup) {res.push_back(e);}
-            }
+            vector<int> nodeingroup = topsort(nodedegree, graphnode, groupnode[groupid]);
+            if (!nodeingroup.size()) return {};
+            else for(auto e:nodeingroup) {res.push_back(e);}
         }
         return res;
     }
