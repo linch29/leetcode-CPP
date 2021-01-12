@@ -34,3 +34,50 @@ public:
         return (i<row && i>=0 && j<col && j>=0);
     }
 };
+
+并查集
+
+class Solution {
+public:
+    int numIslands(vector<vector<char>>& grid) {
+        int row = grid.size();
+        int col = grid[0].size();
+        int cnt = 0;
+        vector<int> parent(row*col,0);
+        for (int i=0; i<row;i++) {
+            for (int j=0; j<col; j++) {
+                if (grid[i][j]=='1') {
+                    parent[i*col+j] = i*col+j;
+                    cnt++;
+                }
+            }
+        }
+        vector<int> dy = {-1,1,0,0};
+        vector<int> dx = {0,0,-1,1};
+        for (int i=0; i<row; i++) {
+            for (int j=0 ; j<col; j++) {
+                if (grid[i][j]!='1') continue;
+                else grid[i][j] = '2';
+                for (int c=0; c<4; c++) {
+                    int nx = i+dx[c], ny = j+dy[c];
+                    if (nx>=0 && nx<row && ny>=0 && ny<col && grid[nx][ny]=='1') {
+                        join(i*col+j, nx*col+ny, parent, cnt);
+                    }
+                }
+            }
+        }
+        return cnt;
+    }
+
+    int find(int x, vector<int>& parent) {
+        if (x!=parent[x]) parent[x] = find(parent[x],parent);
+        return parent[x];
+    }
+    void join(int x, int y, vector<int>& parent, int& cnt) {
+        int xroot = find(x,parent), yroot = find(y,parent);
+        if (xroot != yroot) {
+            parent[yroot] = xroot;
+            cnt--;
+        }
+    }
+};
