@@ -1,0 +1,23 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    vector<int> res;
+    int kthLargest(TreeNode* root, int k) {
+        zhongxu(root);
+        int n = res.size();
+        return res[n-k];
+    }
+    void zhongxu(TreeNode* tree) {
+        if (tree->left) zhongxu(tree->left);
+        res.push_back(tree->val);
+        if (tree->right) zhongxu(tree->right);
+    }
+};
