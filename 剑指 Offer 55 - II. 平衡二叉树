@@ -7,6 +7,8 @@
  *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
  * };
  */
+ 
+
 class Solution {
 public:
     bool isBalanced(TreeNode* root) {
@@ -21,9 +23,7 @@ public:
         else {
             if (abs( deep(root->left) - deep(root->right) )>1) return false;
         }
-        if (root->left && root->right) return (isBalanced(root->left) && isBalanced(root->right));
-        else if (!root->left) return isBalanced(root->right);
-        else return isBalanced(root->left);
+        return isBalanced(root->left) && isBalanced(root->right);
         return true;
     }
 
@@ -31,6 +31,24 @@ public:
         if (!tree->left && !tree->right) return 1;
         else if (!tree->left) return 1+deep(tree->right);
         else if (!tree->right) return 1+deep(tree->left);
-        else return max(1+deep(tree->left), 1+deep(tree->right));
+        else return 1+max(deep(tree->left), deep(tree->right));
+    }
+};
+
+
+后序 剪枝
+class Solution {
+public:
+    bool isBalanced(TreeNode* root) {
+        int res = houxu(root);
+        if (res!=-1) return true;
+        else return false;
+    }
+    int houxu(TreeNode* tree) {
+        if (!tree) return 0;
+        int left = houxu(tree->left), right = houxu(tree->right);
+        if (left==-1 || right==-1 || abs(left-right) > 1) return -1;
+        else return 1+max(left,right);
+
     }
 };
