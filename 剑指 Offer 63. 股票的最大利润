@@ -1,0 +1,16 @@
+class Solution {
+public:
+    int maxProfit(vector<int>& prices) {
+        vector<int> ss;
+        int ans = 0;
+        for (auto e: prices) {
+            while (!ss.empty() && e<=ss.back()) {
+                ans = max(ans,ss.back()-ss.front());
+                ss.pop_back();
+            }
+            if (ss.empty() || e>ss.back()) ss.push_back(e);
+        }
+        if (ss.empty()) return 0;
+        return max(ans,ss.back()-ss.front());
+    }
+};
