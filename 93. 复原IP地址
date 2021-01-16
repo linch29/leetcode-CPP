@@ -4,6 +4,7 @@ public:
     vector<string> ans;
     vector<string> restoreIpAddresses(string s) {
         int slen = s.size();
+        if (slen>12 || slen<4) return {};
         string start;
         for (int i=1; i<4; i++) {
             start = s.substr(0,i);
