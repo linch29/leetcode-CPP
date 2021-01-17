@@ -1,0 +1,29 @@
+class Solution {
+public:
+    vector<vector<int>> ans;
+    vector<int> cur;
+
+    vector<vector<int>> permuteUnique(vector<int>& nums) {
+        int n = nums.size();
+        int pos = 0;
+        dfs(0,n,nums);
+        return ans;
+    }
+
+    void dfs(int pos, int& n, vector<int>& nums) {
+        if (cur.size()==n) {
+            ans.push_back(cur);
+            return;
+        }
+        map<int,bool> mp;
+        for (int i=pos; i<n; i++) {
+            if (mp.count(nums[i])) continue;
+            mp[nums[i]] = true;
+            swap(nums[i],nums[pos]);
+            cur.push_back(nums[pos]);
+            dfs(pos+1,n,nums);
+            swap(nums[i],nums[pos]);
+            cur.pop_back();
+        }
+    }
+};
