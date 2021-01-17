@@ -1,0 +1,55 @@
+class Solution {
+public:
+    vector<vector<string>> ans;
+    vector<vector<string>> solveNQueens(int n) {
+        //initlize the cur
+        string initrow;
+        for (int i=0; i<n; i++) {
+            initrow += '.';
+        }
+        vector<string> cur(n,initrow);
+
+        dfs(-1,cur);
+        return ans;
+        
+
+    }
+
+    void dfs(int curi, vector<string>& cur) {
+        int n = cur.size();
+        if (curi==n-1) {
+            ans.push_back(cur);
+            return;
+        }
+        for (int j=0; j<n;j++) {
+            if (check(cur,curi+1,j)) {
+                cur[curi+1][j] = 'Q';
+                dfs(curi+1,cur);
+                cur[curi+1][j] = '.';
+            }
+        }
+    }
+
+    bool check(vector<string>& cur, int i, int j) {
+        int n = cur.size();
+        for (int row=0; row<i; row++) {
+            if (cur[row][j]=='Q') return false;
+        }
+        int zuoshangstep = min(i,j);
+        int step = zuoshangstep+1;
+        int starti = i-step, startj = j-step;
+        for (int times=0; times<step-1; times++) {
+            starti++; startj++;
+            if (cur[starti][startj]=='Q') return false;
+        }
+
+        int youshangstep = min(i,n-1-j);
+        step = youshangstep+1;
+        starti = i-step, startj = j+step;
+        for (int times=0; times<step-1; times++) {
+            starti++; startj--;
+            if (cur[starti][startj]=='Q') return false;
+        }
+        return true;
+    }
+};
