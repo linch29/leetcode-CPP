@@ -1,0 +1,60 @@
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+ListNode* generate(int n) {
+    ListNode* dummy = new ListNode(-1);
+    ListNode* head = dummy;
+    for (int i=1; i<=n; i++) {
+        dummy->next = new ListNode(i);
+        dummy = dummy->next;
+    }
+    return head->next;
+}
+
+vector<int> facvector(int n) {
+    vector<int> fac(n+1);
+    fac[0]=1;
+    for (int i=1; i<n+1; i++) {
+        fac[i] = i*fac[i-1];
+    }
+    return fac;
+}
+
+string quchu(ListNode*& nlist, int kth) {
+    ListNode* dummy = new ListNode(-1,nlist);
+    ListNode* cur = dummy;
+    for (int i=0; i<kth; i++) {
+        cur = cur->next;
+    }
+    int temp = cur->next->val;
+    cur->next = cur->next->next;
+    nlist = dummy->next;
+    return to_string(temp);
+}
+
+class Solution {
+public:
+    string res;
+
+    string getPermutation(int n, int k) {
+        ListNode* nlist = generate(n);
+        vector<int> fac = facvector(n);
+        int cnt = k-1;
+        int select = 0;
+
+        for (int i=0; i<n; i++) {
+            select = cnt/fac[n-i-1];
+            cnt = cnt%fac[n-i-1];
+            res += quchu(nlist,select);
+        }
+        return res;
+    }
+
+};
