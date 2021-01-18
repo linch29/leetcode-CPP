@@ -1,0 +1,42 @@
+class Solution {
+public:
+    bool ans=false;
+    bool exist(vector<vector<char>>& board, string word) {
+        int row = board.size(); int col = board[0].size();
+        vector<vector<bool>> visit = vector(row,vector<bool>(col,false));
+        int n = word.size();
+        for (int i=0; i<row; i++) {
+            for (int j=0; j<col; j++) {
+                visit[i][j] = true;
+                dfs(board,visit,word,0,n,i,j);
+                visit[i][j] = false;
+            }
+        }
+        return ans;
+    }
+
+    void dfs(vector<vector<char>>& board, vector<vector<bool>>& visit, string& word, int cur, int n, int i, int j) {
+        if (ans) return;
+        char zimu = board[i][j];
+        if (word[cur]!=zimu || cur==n) return;
+        if (word[cur]==zimu && cur==n-1) {
+            ans = true;
+            return;
+        }
+        int row = board.size(); int col = board[0].size();
+        vector<int> dx = {1,-1,0,0};
+        vector<int> dy = {0,0,1,-1};
+        for (int dic=0; dic<4; dic++) {
+            int newi = i+dy[dic];
+            int newj = j+dx[dic];
+            if (newi<0 || newi>=row || newj<0 || newj>=col) continue;
+            if (visit[newi][newj]) continue;
+
+            visit[newi][newj] = true;
+            dfs(board,visit,word,cur+1,n,newi,newj);
+            visit[newi][newj] = false;
+
+        }
+
+    }
+};
