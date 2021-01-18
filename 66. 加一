@@ -1,0 +1,21 @@
+class Solution {
+public:
+    vector<int> plusOne(vector<int>& digits) {
+        int n = digits.size();
+        dfs(digits,n-1);
+        return digits;
+    }
+    void dfs(vector<int>& digits, int num) {
+        if (digits[num]!=9) {
+            digits[num]++;
+            return;
+        }
+        if (num==0 && digits[num]==9) {
+            digits[num] = 0;
+            digits.insert(digits.begin(),1);
+            return;
+        }
+        digits[num] = 0;
+        dfs(digits,num-1);
+    }
+};
