@@ -1,0 +1,70 @@
+超时的并查集
+
+class Solution {
+public:
+    vector<int> parent;
+
+    int find_parent(int x) {
+        if (x==parent[x]) return x;
+        else {
+            parent[x] = find_parent(parent[x]);
+            return parent[x];
+        }
+    }
+
+    void join(int i, int j) {
+        int iroot = find_parent(i);
+        int jroot = find_parent(j);
+        if (iroot!=jroot) {
+            parent[jroot] = iroot;
+        }
+    }
+    vector<vector<string>> accountsMerge(vector<vector<string>>& accounts) {
+        int n = accounts.size();
+        unordered_map<int,string> int2str;
+        int cnt = n;
+        for( int i=0; i<n; i++) {
+            for (int j=1; j<accounts[i].size(); j++) {
+                int2str[cnt] = accounts[i][j];
+                cnt++;
+            }
+        }
+        parent = vector<int>(cnt);
+        for (int i=0; i<n; i++) {
+            parent[i]=i;
+        }
+        cnt = n;
+        for( int i=0; i<n; i++) {
+            for (int j=1; j<accounts[i].size(); j++) {
+                parent[cnt] = i;
+                cnt++;
+            }
+        }
+
+        for (int i=n; i<cnt; i++) {
+            for (int j=i+1;j<cnt;j++) {
+                if (parent[i]!=parent[j] && int2str[i]==int2str[j]) {
+                    join(i,j);
+                }
+            }
+        }
+
+        vector<set<string>> res(n);
+        for (int i=n; i<parent.size(); i++) {
+            res[find_parent(i)].insert(int2str[i]);
+        }
+
+        vector<vector<string>> ans;
+        for (int i=0; i<n; i++) {
+            if (res[i].size()) {
+                vector<string> temp;
+                temp.push_back(accounts[i][0]);
+                for (auto e: res[i]) {
+                    temp.push_back(e);
+                }
+                ans.push_back(temp);
+            }
+        }
+        return ans;
+    }
+};
