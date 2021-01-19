@@ -1,0 +1,66 @@
+很丑的O(n)解法
+
+class Solution {
+public:
+    string minWindow(string s, string t) {
+        int tn = t.size();
+        int n = s.size();
+        int cnt = 0;
+        unordered_map<char,int> tmp;
+        for (int i=0; i<tn; i++) {
+            tmp[t[i]]++;
+        }
+        unordered_map<char,int> mp;
+        int left=0, right=0;
+        int fleft=0, fright=0, len=100000;
+        bool found = false;
+        
+        while (right<n) {
+            if(!tmp[s[right]]) {
+                right++;
+                continue;
+            }
+            // s[right]在tmp
+            else {
+                if (mp[s[right]]<tmp[s[right]]) cnt++;
+                mp[s[right]]++;
+                if (cnt==tn) {
+                    found = true;
+                    while (!tmp[s[left]]) {
+                        left++;
+                    }
+                    if ((right-left+1)<len) {
+                        len = right-left+1;
+                        fleft = left; 
+                        fright = right;
+                    }
+                }
+                while (cnt==tn) {
+                    if (tmp[s[left]] && mp[s[left]]==tmp[s[left]]) {
+                        mp[s[left]]--;
+                        cnt--;
+                        left++;
+                    }
+                    else if (tmp[s[left]] && mp[s[left]]>tmp[s[left]]) {
+                        mp[s[left]]--;
+                        left++;
+                        if (right-left+1<len) {
+                            len = right-left+1;
+                            fleft = left;
+                        }
+                    }
+                    else if (!tmp[s[left]]) {
+                        left++;
+                        if (right-left+1<len) {
+                            len = right-left+1;
+                            fleft = left;
+                        }
+                    }
+                }
+                right++;
+            }
+        }
+        if (found) return s.substr(fleft,len);
+        else return "";
+    }
+};
