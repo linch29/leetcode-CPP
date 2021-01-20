@@ -1,0 +1,25 @@
+class Solution {
+public:
+    string cur;
+    vector<string> ans;
+    vector<string> generateParenthesis(int n) {
+        int left=0, right=0;
+        dfs(0,0,cur,n);
+        return ans;
+    }
+
+    void dfs(int left, int right, string& cur, int& n) {
+        if (left>n || right>left) return;
+        if (left==n && right==n) {
+            ans.push_back(cur);
+            return;
+        }
+        int cc = cur.size();
+        cur = cur+"(";
+        dfs(left+1,right,cur,n);
+        cur = cur.substr(0,cc);
+
+        cur = cur+")";
+        dfs(left,right+1,cur,n);
+    }
+};
