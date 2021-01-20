@@ -1,0 +1,22 @@
+class Solution {
+public:
+    int maximumProduct(vector<int>& nums) {
+        sort(nums.begin(),nums.end());
+        vector<int> shuzu;
+        int ans = INT_MIN;
+        int n = nums.size();
+        for (int i=0; i<n; i++) {
+            if (i<3 || i>=n-3) shuzu.push_back(nums[i]);
+        }
+        int nn = shuzu.size();
+        for (int i=0; i<nn-2; i++) {
+            for (int j=i+1; j<nn-1; j++) {
+                for (int k=j+1; k<nn; k++) {
+                    ans = max(shuzu[i]*shuzu[j]*shuzu[k],ans);
+                }
+            }
+        }
+
+        return ans;
+    }
+};
