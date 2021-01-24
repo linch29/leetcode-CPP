@@ -1,0 +1,91 @@
+struct DLinkList {
+    int key;
+    int value;
+    DLinkList* prev;
+    DLinkList* next;
+    DLinkList() : key(0), value(0), prev(nullptr), next(nullptr) {}
+    DLinkList(int _key, int _value) : key(_key), value(_value), prev(nullptr), next(nullptr) {}
+};
+
+int capsize=0;
+int cursize=0;
+DLinkList* head;
+DLinkList* tail;
+unordered_map<int,DLinkList*> cache;
+
+class LRUCache {
+public:
+    LRUCache(int capacity) {
+        capsize = capacity;
+        cursize = 0;
+        cache.clear();
+        head = new DLinkList();
+        tail = new DLinkList();
+        head->next = tail;
+        tail->prev = head;
+    }
+    
+    int get(int key) {
+        if (!cache.count(key)) return -1;
+        DLinkList* node = cache[key];
+        
+        // move node to head;
+        node->prev->next = node->next;
+        node->next->prev = node->prev;
+        node->prev = head;
+        node->next = head->next;
+        head->next = node;
+        node->next->prev = node;
+
+        return node->value;
+
+    }
+    
+    void put(int key, int value) {
+        if (cache.count(key)) {
+            DLinkList* node = cache[key];
+            node->value = value;
+            // move node to head;
+            node->prev->next = node->next;
+            node->next->prev = node->prev;
+            node->prev = head;
+            node->next = head->next;
+            head->next = node;
+            node->next->prev = node;
+        }
+        else {
+            if (cursize < capsize) {
+                DLinkList* node  = new DLinkList(key, value);
+                cache[key] = node;
+                // add node to head
+                node->next = head->next;
+                node->next->prev = node;
+                node->prev = head;
+                node->prev->next = node;
+                cursize++;
+            }
+            else {
+                int tailkey = tail->prev->key;
+                cache.erase(tailkey);
+                DLinkList* temp = tail->prev;
+                tail->prev->prev->next = tail;
+                tail->prev = tail->prev->prev;
+                delete temp;
+                DLinkList* node  = new DLinkList(key, value);
+                cache[key] = node;
+                // add node to head
+                node->next = head->next;
+                node->next->prev = node;
+                node->prev = head;
+                node->prev->next = node;
+            }
+        }
+    }
+};
+
+/**
+ * Your LRUCache object will be instantiated and called as such:
+ * LRUCache* obj = new LRUCache(capacity);
+ * int param_1 = obj->get(key);
+ * obj->put(key,value);
+ */
