@@ -1,0 +1,22 @@
+class Solution {
+public:
+    int numEquivDominoPairs(vector<vector<int>>& dominoes) {
+        unordered_map<int,int> mp;
+        int n = dominoes.size();
+        for (int i=0; i<n; i++) {
+            auto e = dominoes[i];
+            sort(e.begin(),e.end());
+            int keynum = e[0]*10+e[1];
+            mp[keynum]++;
+        }
+        int ans = 0;
+        for (auto e:mp) {
+            ans += cn2(e.second);
+        }
+        return ans;
+    }
+    int cn2(int n) {
+        int ans = n*(n-1)/2;
+        return ans;
+    }
+};
