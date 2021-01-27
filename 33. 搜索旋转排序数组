@@ -1,0 +1,64 @@
+class Solution {
+public:
+
+    int binary_search(vector<int>& nums, int target) {
+        int n = nums.size();
+        if (n==1) return nums[0]==target? 0:-1;
+        int left = 0, right = n-1;
+        int mid;
+        while (left<right) {
+            if (right==left+1) {
+                if (nums[left]==target) return left;
+                else if (nums[right]==target) return right;
+                else return -1;
+            }
+            mid = (left+right)/2;
+            if (nums[mid]<target) {
+                left = mid;
+            }
+            else if (target<nums[mid]) {
+                right = mid;
+            }
+            else return mid;
+        }
+        return mid;
+    }
+    int search(vector<int>& nums, int target) {
+        int n = nums.size();
+        if (n==1) return nums[0]==target? 0:-1;
+        int left = 0, right = n-1;
+        int mid;
+        while (left<right) {
+            if (right==left+1) {
+                if (nums[left]==target) return left;
+                else if (nums[right]==target) return right;
+                else return -1;
+            }
+            mid = (left+right)/2;
+            if (nums[mid]==target) return mid;
+            if (nums[mid+1]<nums[right]) {
+                if (nums[mid+1]<=target && target <=nums[right]) {
+                    vector<int> v2;
+                    v2 = vector<int>(nums.begin()+mid+1,nums.begin()+right+1);
+                    int basic_index = mid+1;
+                    int bs = binary_search(v2,target);
+                    if (bs==-1) return -1;
+                    else return basic_index+bs;
+                }
+                else right = mid;
+            }
+            else {
+                if (nums[left]<=target && target<= nums[mid-1]) {
+                    vector<int> v2;
+                    v2 = vector<int>(nums.begin()+left,nums.begin()+mid);
+                    int basic_index = left;
+                    int bs = binary_search(v2,target);
+                    if (bs==-1) return -1;
+                    else return basic_index+bs;
+                } 
+                else left = mid;
+            }
+        }
+        return 0;
+    }
+};
