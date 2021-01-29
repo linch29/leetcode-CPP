@@ -1,0 +1,74 @@
+struct cmp_xiaoding {
+    bool operator() (const pair<int,int>& a, const pair<int,int>& b) {
+        return a.first>b.first;
+    }
+};
+
+class Solution {
+public:
+    vector<vector<int>> Graph;
+    vector<vector<int>> W;
+
+    bool check (int i, int j, int& row, int& col) {
+        if (i>=0 && i<row && j>=0 && j<col) return true;
+        else return false;
+    }
+
+    int id(int i, int j, int& col) {
+        return i*col+j;
+    }
+
+    void build_graph(vector<vector<int>>& heights, vector<vector<int>>& graph, vector<vector<int>>& W) {
+        int row = heights.size();
+        int col = heights[0].size();
+        graph = vector<vector<int>>(row*col,vector<int>());
+        W = vector<vector<int>>(row*col,vector<int>());
+        for (int i=0; i<row; i++) {
+            for (int j=0; j<col; j++) {
+                if (check(i,j+1,row,col)) {
+                    graph[id(i,j,col)].push_back(id(i,j+1,col));
+                    W[id(i,j,col)].push_back(abs(heights[i][j]-heights[i][j+1]));
+                }
+                if (check(i,j-1,row,col)) {
+                    graph[id(i,j,col)].push_back(id(i,j-1,col));
+                    W[id(i,j,col)].push_back(abs(heights[i][j]-heights[i][j-1]));
+                }
+                if (check(i-1,j,row,col)) {
+                    graph[id(i,j,col)].push_back(id(i-1,j,col));
+                    W[id(i,j,col)].push_back(abs(heights[i][j]-heights[i-1][j]));
+                }
+                if (check(i+1,j,row,col)) {
+                    graph[id(i,j,col)].push_back(id(i+1,j,col));
+                    W[id(i,j,col)].push_back(abs(heights[i][j]-heights[i+1][j]));
+                }
+            }
+        }
+    }
+
+    int minimumEffortPath(vector<vector<int>>& heights) {
+        build_graph(heights, Graph, W);
+        int row = heights.size();
+        int col = heights[0].size();
+        vector<int> dis(row*col, INT_MAX);
+        Dijkstra(Graph, W, 0, dis);
+        return dis[row*col-1];
+    }
+
+    void Dijkstra(vector<vector<int>>& graph, vector<vector<int>>& W, int start, vector<int>& dis) {
+        dis[start]=0;
+        // pair.first: distance, pair.second: id;
+        priority_queue<pair<int,int>, vector<pair<int,int>>, cmp_xiaoding> pq;
+        pq.push(make_pair(0,start));
+        while (!pq.empty()) {
+            int u = pq.top().second;
+            pq.pop();
+            for (int i=0; i<graph[u].size(); i++) {
+                int uvdis = max(dis[u],W[u][i]);
+                if (uvdis<dis[graph[u][i]]) {
+                    dis[graph[u][i]] = uvdis;
+                    pq.push(make_pair(dis[graph[u][i]],graph[u][i]));
+                }
+            }
+        }
+    }
+};
