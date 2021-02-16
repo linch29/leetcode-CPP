@@ -1,0 +1,84 @@
+class Node {
+public:
+    int frequency, key, value, lastVisitTime;
+    Node(int key, int value, int lastVisitTime) {
+        this->key = key;
+        this->value = value;
+        frequency = 1;
+        this->lastVisitTime = lastVisitTime;
+    }
+};
+
+struct cmp {
+  bool operator() (const Node* lhs, const Node* rhs) const
+  {
+      if (lhs->frequency != rhs->frequency) {
+        return lhs->frequency<rhs->frequency;
+      }
+      return lhs->lastVisitTime<rhs->lastVisitTime;
+      
+  }
+};
+
+class LFUCache {
+public:
+    /*
+    * @param capacity: An integer
+    */LFUCache(int capacity) {
+        // do intialization if necessary
+        this->capacity = capacity;
+        this->current_time = 0;
+    }
+
+    /*
+     * @param key: An integer
+     * @param value: An integer
+     * @return: nothing
+     */
+    void put(int key, int value) {
+        // write your code here
+        if (capacity==0) return;
+        if (get(key) != -1) {
+            mp[key]->value = value;
+            return;
+        }
+        Node* node = new Node(key, value, current_time);
+        if (mp.size() >= capacity) {
+            evict();
+        }
+        mp[key] = node;
+        s.insert(node);
+        current_time ++;
+        
+    }
+
+    /*
+     * @param key: An integer
+     * @return: An integer
+     */
+    int get(int key) {
+        // write your code here
+        if (capacity==0) return -1;
+        if (mp.find(key) == mp.end()) {
+            return -1;
+        }
+        Node* node = mp[key];
+        s.erase(node);
+        node->frequency ++;
+        node->lastVisitTime = current_time;
+        s.insert(node);
+        current_time ++;
+        return node->value;
+    }
+    
+private:
+    int capacity, current_time;
+    multiset<Node*, cmp> s;
+    unordered_map<int, Node*> mp;
+    void evict() {
+        Node* node = *s.begin();
+        s.erase(node);
+        mp.erase(node->key);
+        delete node;
+    }
+};
