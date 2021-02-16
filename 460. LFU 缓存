@@ -82,3 +82,63 @@ private:
         delete node;
     }
 };
+
+
+```````````````````````````````````````````````````````````````````````````````````
+```````````````````````````````````````````````````````````````````````````````````
+
+
+struct Node {
+    int key, val, freq;
+    Node(int _key,int _val,int _freq): key(_key), val(_val), freq(_freq){}
+};
+class LFUCache {
+    int minfreq, capacity;
+    unordered_map<int, list<Node>::iterator> key_table;
+    unordered_map<int, list<Node>> freq_table;
+public:
+    LFUCache(int _capacity) {
+        minfreq = 0;
+        capacity = _capacity;
+        key_table.clear();
+        freq_table.clear();
+    }
+    
+    int get(int key) {
+        if (capacity == 0) return -1;
+        if (!key_table.count(key)) return -1;
+        auto node_iter = key_table[key];
+        int val = node_iter -> val, freq = node_iter -> freq;
+        freq_table[freq].erase(node_iter);
+        if (freq_table[freq].size() == 0) {
+            if (minfreq == freq) minfreq += 1;
+        }
+        freq_table[freq + 1].push_front(Node(key, val, freq + 1));
+        key_table[key] = freq_table[freq + 1].begin();
+        return val;
+    }
+    
+    void put(int key, int value) {
+        if (capacity == 0) return;
+        if (!key_table.count(key)) {
+            if (key_table.size() == capacity) {
+                Node node = freq_table[minfreq].back();
+                key_table.erase(node.key);
+                freq_table[minfreq].pop_back();
+            } 
+            freq_table[0].push_front(Node(key, value, 0));
+            key_table[key] = freq_table[0].begin();
+            minfreq = 0;
+        } 
+        else {
+            auto node_iter = key_table[key];
+            int freq = node_iter -> freq;
+            freq_table[freq].erase(node_iter);
+            if (freq_table[freq].size() == 0) {
+                if (minfreq == freq) minfreq += 1;
+            }
+            freq_table[freq + 1].push_front(Node(key, value, freq + 1));
+            key_table[key] = freq_table[freq + 1].begin();
+        }
+    }
+};
