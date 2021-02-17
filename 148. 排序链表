@@ -1,0 +1,131 @@
+交换节点的快排
+class Solution {
+public:
+    ListNode* sortList(ListNode* head) {
+        if (!head || !head->next) return head;
+        ListNode* newhead = new ListNode(-1);
+        newhead->next = head;
+        return partition(newhead,nullptr);
+    }
+
+    ListNode* partition(ListNode* head, ListNode* end) {
+        if (head==end || head->next==end || head->next->next==end) return head;
+        ListNode* pivot = head->next;
+        ListNode* p = pivot;
+        ListNode* temp = new ListNode(-1);
+        ListNode* tp = temp;
+        while (p->next != end) {
+            if (p->next->val < pivot->val) {
+                tp->next = p->next;
+                tp = tp->next;
+                p->next = p->next->next;
+            }
+            else {
+                p = p->next;
+            }
+        }
+        tp->next = pivot;
+        head->next = temp->next;
+        partition(head,pivot);
+        partition(pivot,end);
+        return head->next;
+    }
+    
+};
+
+
+```````````````````````````````````````````````````````````````````````````````````
+
+交换节点值的快排
+class Solution {
+public:
+    ListNode* sortList(ListNode* head) {
+        if (!head || !head->next) return head;
+        ListNode* newhead = new ListNode(-1);
+        newhead->next = head;
+        return partition(newhead,nullptr);
+    }
+
+    ListNode* partition(ListNode* head, ListNode* end) {
+        if (head==end || head->next==end || head->next->next==end) return head;
+        ListNode* pivot = head->next;
+        ListNode* slow = pivot;
+        ListNode* fast = pivot;
+        while (fast!=end) {
+            if (fast->val < pivot->val) {
+                slow = slow->next;
+                swap(slow->val,fast->val);
+            }
+            fast = fast->next;
+        }
+        swap(pivot->val,slow->val);
+        partition(head,slow);
+        partition(slow,end);
+        return head->next;
+    }
+};
+
+```````````````````````````````````````````````````````````````````````````````````
+
+空间复杂度O(1)
+class Solution {
+public:
+    ListNode* sortList(ListNode* head) {
+        ListNode dummyHead(0);
+        dummyHead.next = head;
+        auto p = head;
+        int length = 0;
+        while (p) {
+            ++length;
+            p = p->next;
+        }
+        
+        for (int size = 1; size < length; size *= 2) {
+            auto cur = dummyHead.next;
+            auto tail = &dummyHead;
+            
+            while (cur) {
+                auto left = cur;
+                auto right = cut(left, size); // left->@->@ right->@->@->@...
+                cur = cut(right, size); // left->@->@ right->@->@  cur->@->...
+                
+                tail->next = merge(left, right);
+                while (tail->next) {
+                    tail = tail->next;
+                }
+            }
+        }
+        return dummyHead.next;
+    }
+    
+    ListNode* cut(ListNode* head, int n) {
+        auto p = head;
+        while (--n && p) {
+            p = p->next;
+        }
+        
+        if (!p) return nullptr;
+        
+        auto next = p->next;
+        p->next = nullptr;
+        return next;
+    }
+    
+    ListNode* merge(ListNode* l1, ListNode* l2) {
+        ListNode dummyHead(0);
+        auto p = &dummyHead;
+        while (l1 && l2) {
+            if (l1->val < l2->val) {
+                p->next = l1;
+                p = l1;
+                l1 = l1->next;       
+            } else {
+                p->next = l2;
+                p = l2;
+                l2 = l2->next;
+            }
+        }
+        p->next = l1 ? l1 : l2;
+        return dummyHead.next;
+    }
+};
